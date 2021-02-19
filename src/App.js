@@ -1,23 +1,71 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
 
 function App() {
+  const [contents, setContents] = useState([]);
+  const [title, setTitle] = useState('');
+  const [desc, setDesc] = useState('');
+
+  const createContents = content => {
+    setContents([...contents, content]);
+  };
+
+  const removeContent = id => {
+    setContents(contents.filter(content => content.id !== id));
+  };
+
+  const updateContent = id => {
+    setContents(
+      contents.map(content =>
+        content.id === id ? { ...content, title, desc } : content
+      )
+    );
+  };
+
+  const onSubmit = e => {
+    e.preventDefault();
+    createContents({
+      id: Date.now(),
+      title,
+      desc,
+    });
+    setTitle('');
+    setDesc('');
+  };
+
+  console.log(contents);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+      <form onSubmit={onSubmit}>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          <input
+            type="text"
+            name={title}
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="title"
+          ></input>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <p>
+          <textarea
+            name={desc}
+            value={desc}
+            onChange={e => setDesc(e.target.value)}
+            placeholder="description"
+          ></textarea>
+        </p>
+        <p>
+          <input type="submit"></input>
+        </p>
+      </form>
+
+      {contents.map((content, index) => (
+        <div key={index}>
+          <h3>{content.title}</h3>
+          <span>{content.desc}</span>
+          <button onClick={() => removeContent(content.id)}>삭제</button>
+          <button onClick={() => updateContent(content.id)}>수정</button>
+        </div>
+      ))}
     </div>
   );
 }
